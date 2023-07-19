@@ -37,7 +37,7 @@ def main():
         raise ValueError("Both JSON and SOURCE files are needed")
 
     # load the OCR data
-    menu = Menu.from_dict(json.load(open(JSON_FILE)))
+    menu = Menu.from_json(json.load(open(JSON_FILE)))
 
     # load the PDF or JPEG
     file_type = SOURCE_FILE.split(".")[-1]

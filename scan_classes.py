@@ -5,8 +5,6 @@ import json
 
 from fitz import Point as FitzPoint
 
-scales = {"inch": 72, "mm": 2.83465, "pixel": 1}
-
 
 @attr.s
 class Point:
@@ -16,13 +14,14 @@ class Point:
 
 @attr.s
 class BoundingBox:
+    scales = {"inch": 72, "mm": 2.83465, "pixel": 1}
     top_left: Point = attr.ib()
     top_right: Point = attr.ib()
     bottom_right: Point = attr.ib()
     bottom_left: Point = attr.ib()
 
     @staticmethod
-    def from_lst(lst: list[float]) -> "BoundingBox":
+    def from_json(lst: list[float]) -> "BoundingBox":
         return BoundingBox(
             top_left=Point(x=lst[0], y=lst[1]),
             top_right=Point(x=lst[2], y=lst[3]),
@@ -30,47 +29,40 @@ class BoundingBox:
             bottom_left=Point(x=lst[6], y=lst[7]),
         )
 
-    def to_fitz_points(self, page_height: int, scale: str = "inch") -> List[FitzPoint]:
-        top_left_x = self.top_left.x * scales[scale]
-        top_left_y = page_height - self.top_left.y * scales[scale]
-        top_right_x = self.top_right.x * scales[scale]
-        top_right_y = page_height - self.top_right.y * scales[scale]
-        bottom_right_x = self.bottom_right.x * scales[scale]
-        bottom_right_y = page_height - self.bottom_right.y * scales[scale]
-        bottom_left_x = self.bottom_left.x * scales[scale]
-        bottom_left_y = page_height - self.bottom_left.y * scales[scale]
+    def _calculate_point(self, point: Point, page_height: int, scale: str) -> FitzPoint:
+        x = point.x * self.scales[scale]
+        y = page_height - point.y * self.scales[scale]
+        return FitzPoint(x, y)
 
+    def to_fitz_points(self, page_height: int, scale: str = "inch") -> List[FitzPoint]:
         return [
-            FitzPoint(top_left_x, top_left_y),
-            FitzPoint(top_right_x, top_right_y),
-            FitzPoint(bottom_right_x, bottom_right_y),
-            FitzPoint(bottom_left_x, bottom_left_y),
+            self._calculate_point(self.top_left, page_height, scale),
+            self._calculate_point(self.top_right, page_height, scale),
+            self._calculate_point(self.bottom_right, page_height, scale),
+            self._calculate_point(self.bottom_left, page_height, scale),
         ]
 
 
 @attr.s
-class BoundingBoxedObject:
-    bounding_box: BoundingBox = attr.ib()
-
-
-@attr.s
-class Word(BoundingBoxedObject):
+class Word:
     text: str = attr.ib()
+    bounding_box: BoundingBox = attr.ib()
     confidence: Optional[str] = attr.ib(default=None)
 
 
 @attr.s
-class Line(BoundingBoxedObject):
+class Line:
     text: str = attr.ib()
+    bounding_box: BoundingBox = attr.ib()
     words: List[Word] = attr.ib(factory=list)
 
     @staticmethod
-    def from_dict(data: dict) -> "Line":
+    def from_json(data: dict) -> "Line":
         return Line(
-            bounding_box=BoundingBox.from_lst(data["boundingBox"]),
+            bounding_box=BoundingBox.from_json(data["boundingBox"]),
             words=[
                 Word(
-                    bounding_box=BoundingBox.from_lst(word["boundingBox"]),
+                    bounding_box=BoundingBox.from_json(word["boundingBox"]),
                     text=word["text"],
                 )
                 for word in data["words"]
@@ -89,14 +81,14 @@ class MenuPage:
     lines: List[Line] = attr.ib(factory=list)
 
     @staticmethod
-    def from_dict(data: dict) -> "MenuPage":
+    def from_json(data: dict) -> "MenuPage":
         return MenuPage(
             page_num=data["page"],
             clockwise_orientation=data["clockwiseOrientation"],
             width=data["width"],
             height=data["height"],
             unit=data["unit"],
-            lines=[Line.from_dict(line) for line in data["lines"]],
+            lines=[Line.from_json(line) for line in data["lines"]],
         )
 
 
@@ -106,12 +98,13 @@ class Menu:
     pages: List[MenuPage] = attr.ib(factory=list)
 
     @staticmethod
-    def from_dict(data: dict) -> "Menu":
+    def from_json(data: dict) -> "Menu":
         recognition_results = [
-            MenuPage.from_dict(page) for page in data["recognitionResults"]
+            MenuPage.from_json(page) for page in data["recognitionResults"]
         ]
         return Menu(status=data["status"], pages=recognition_results)
 
     @staticmethod
     def from_json_file(path: str) -> "Menu":
-        return Menu.from_dict(json.load(open(path)))
+        with open(path) as file:
+            return Menu.from_json(json.load(file))
