@@ -52,12 +52,7 @@ def main():
     for m_page in menu.pages:
         page = doc[m_page.page_num - 1]
         for line in m_page.lines:
-            bbox = line.bounding_box
-            points = bbox.to_fitz_points(m_page.unit)
-            annot = page.add_polygon_annot(points)
-            annot.set_border(width=0.3, dashes=[2])
-            annot.set_colors(stroke=(0, 0, 1))
-            annot.update()
+            line.bounding_box.draw(page, m_page.unit)
 
     # Save pdf
     doc.save("output.pdf")

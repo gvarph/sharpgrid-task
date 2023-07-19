@@ -5,42 +5,33 @@ import json
 
 from fitz import Point as FitzPoint
 
+SCALES = {"inch": 72, "mm": 2.83465, "pixel": 1}
+
 
 @attr.s
 class Point:
     x: float = attr.ib(converter=float)
     y: float = attr.ib(converter=float)
 
+    def to_fitz(self, scale: str) -> FitzPoint:
+        return FitzPoint(self.x * SCALES[scale], self.y * SCALES[scale])
+
 
 @attr.s
 class BoundingBox:
-    scales = {"inch": 72, "mm": 2.83465, "pixel": 1}
-    top_left: Point = attr.ib()
-    top_right: Point = attr.ib()
-    bottom_right: Point = attr.ib()
-    bottom_left: Point = attr.ib()
+    points: List[Point] = attr.ib()
 
     @staticmethod
     def from_json(lst: list[float]) -> "BoundingBox":
-        return BoundingBox(
-            top_left=Point(x=lst[0], y=lst[1]),
-            top_right=Point(x=lst[2], y=lst[3]),
-            bottom_right=Point(x=lst[4], y=lst[5]),
-            bottom_left=Point(x=lst[6], y=lst[7]),
-        )
+        points = [Point(x=lst[i], y=lst[i + 1]) for i in range(0, len(lst), 2)]
+        return BoundingBox(points=points)
 
-    def _calculate_point(self, point: Point, scale: str) -> FitzPoint:
-        x = point.x * self.scales[scale]
-        y = point.y * self.scales[scale]
-        return FitzPoint(x, y)
-
-    def to_fitz_points(self, scale: str = "inch") -> List[FitzPoint]:
-        return [
-            self._calculate_point(self.top_left, scale),
-            self._calculate_point(self.top_right, scale),
-            self._calculate_point(self.bottom_right, scale),
-            self._calculate_point(self.bottom_left, scale),
-        ]
+    def draw(self, page, scale: str = "inch", color: tuple = (0, 0, 1)):
+        points = [point.to_fitz(scale) for point in self.points]
+        annot = page.add_polygon_annot(points)
+        annot.set_border(width=0.3, dashes=[2])
+        annot.set_colors(stroke=color)
+        annot.update()
 
 
 @attr.s
