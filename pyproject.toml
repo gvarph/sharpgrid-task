@@ -4,11 +4,11 @@ version = "0.1.0"
 description = ""
 authors = ["Filip Krul <gvarph006@gmail.com>"]
 readme = "README.md"
-packages = [{include = "sharpgrid_task"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"
 attrs = "^23.1.0"
+pymupdf = "^1.22.5"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.7.0"
