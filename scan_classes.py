@@ -3,6 +3,10 @@ import attr
 from attr.validators import instance_of
 import json
 
+from fitz import Point as FitzPoint
+
+scales = {"inch": 72, "mm": 2.83465, "pixel": 1}
+
 
 @attr.s
 class Point:
@@ -25,6 +29,23 @@ class BoundingBox:
             bottom_right=Point(x=lst[4], y=lst[5]),
             bottom_left=Point(x=lst[6], y=lst[7]),
         )
+
+    def to_fitz_points(self, page_height: int, scale: str = "inch") -> List[FitzPoint]:
+        top_left_x = self.top_left.x * scales[scale]
+        top_left_y = page_height - self.top_left.y * scales[scale]
+        top_right_x = self.top_right.x * scales[scale]
+        top_right_y = page_height - self.top_right.y * scales[scale]
+        bottom_right_x = self.bottom_right.x * scales[scale]
+        bottom_right_y = page_height - self.bottom_right.y * scales[scale]
+        bottom_left_x = self.bottom_left.x * scales[scale]
+        bottom_left_y = page_height - self.bottom_left.y * scales[scale]
+
+        return [
+            FitzPoint(top_left_x, top_left_y),
+            FitzPoint(top_right_x, top_right_y),
+            FitzPoint(bottom_right_x, bottom_right_y),
+            FitzPoint(bottom_left_x, bottom_left_y),
+        ]
 
 
 @attr.s
