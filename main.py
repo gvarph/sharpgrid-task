@@ -1,58 +1,29 @@
-# %%
-# Imports
-from typing import List
-import attr
+import fitz
+
+from scan_classes import *
 
 
-# %%
-# Class definitions
-@attr.s
-class Word:
-    bounding_box: List[int] = attr.ib()
-    text: str = attr.ib()
+FILE_NAME = "menu-1"
+FILE_TYPE = "pdf"
+
+# load the OCR data
+menu = Menu.from_dict(json.load(open(f"./data/{FILE_NAME}.json")))
+
+# load the PDF
+if FILE_TYPE == "pdf":
+    doc = fitz.Document(f"./data/{FILE_NAME}.pdf")
+
+else:
+    raise ValueError("Invalid file type")
 
 
-@attr.s
-class Line:
-    bounding_box: List[int] = attr.ib()
-    words: List[Word] = attr.ib(factory=list)
+for m_page in menu.pages:
+    # match the page number
+    page = doc[m_page.page_num - 1]
 
-    @staticmethod
-    def from_dict(data: dict) -> "Line":
-        words = [Word(**word) for word in data["words"]]
-        return Line(data["boundingBox"], words)
+    # draw the bounding boxes
+    annot = page.add_rect_annot(([100, 150, 200, 250]))
 
 
-@attr.s
-class Region:
-    bounding_box: List[int] = attr.ib()
-    lines: List[Line] = attr.ib(factory=list)
-
-    @staticmethod
-    def from_dict(data: dict) -> "Region":
-        lines = [Line.from_dict(line) for line in data["lines"]]
-        return Region(data["boundingBox"], lines)
-
-
-@attr.s
-class Page:
-    regions: List[Region] = attr.ib(factory=list)
-
-    @staticmethod
-    def from_dict(data: dict) -> "Page":
-        regions = [Region.from_dict(region) for region in data["regions"]]
-        return Page(regions)
-
-
-@attr.s
-class Document:
-    pages: List[Page] = attr.ib(factory=list)
-
-    @staticmethod
-    def from_json(data: dict) -> "Document":
-        pages = [Page.from_dict(page) for page in data["pages"]]
-        return Document(pages)
-
-
-# %%
-# Test
+# Save pdf
+doc.save("output.pdf")
