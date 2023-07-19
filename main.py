@@ -53,8 +53,7 @@ def main():
         page = doc[m_page.page_num - 1]
         for line in m_page.lines:
             bbox = line.bounding_box
-            points = bbox.to_fitz_points(page.rect.height, m_page.unit)
-            points = [(x, page.mediabox.y1 - y) for x, y in points]
+            points = bbox.to_fitz_points(m_page.unit)
             annot = page.add_polygon_annot(points)
             annot.set_border(width=0.3, dashes=[2])
             annot.set_colors(stroke=(0, 0, 1))

@@ -29,17 +29,17 @@ class BoundingBox:
             bottom_left=Point(x=lst[6], y=lst[7]),
         )
 
-    def _calculate_point(self, point: Point, page_height: int, scale: str) -> FitzPoint:
+    def _calculate_point(self, point: Point, scale: str) -> FitzPoint:
         x = point.x * self.scales[scale]
-        y = page_height - point.y * self.scales[scale]
+        y = point.y * self.scales[scale]
         return FitzPoint(x, y)
 
-    def to_fitz_points(self, page_height: int, scale: str = "inch") -> List[FitzPoint]:
+    def to_fitz_points(self, scale: str = "inch") -> List[FitzPoint]:
         return [
-            self._calculate_point(self.top_left, page_height, scale),
-            self._calculate_point(self.top_right, page_height, scale),
-            self._calculate_point(self.bottom_right, page_height, scale),
-            self._calculate_point(self.bottom_left, page_height, scale),
+            self._calculate_point(self.top_left, scale),
+            self._calculate_point(self.top_right, scale),
+            self._calculate_point(self.bottom_right, scale),
+            self._calculate_point(self.bottom_left, scale),
         ]
 
 
