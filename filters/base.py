@@ -13,9 +13,9 @@ class Filter(ABC):
     Each filter must implement an `apply` method which modifies a provided list of lines.
     """
 
-    def __init__(self, weight: float):
-        """Initialize the Filter with a weight parameter."""
-        self.weight = weight
+    def __init__(self, confidence_multiplier: float):
+        """Initialize the Filter with a confidence_multiplier parameter."""
+        self.confidence_multiplier = confidence_multiplier
 
     @abstractmethod
     def apply(self, lines: List[Line]):

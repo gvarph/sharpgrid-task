@@ -13,7 +13,7 @@ class FilterPriceLines(Filter):
         for line in lines:
             if ",-" in line.text and any(char.isdigit() for char in line.text):
                 line.analysis.type = "price"
-                line.analysis.category_confidence *= self.weight
+                line.analysis.category_confidence *= self.confidence_multiplier
 
 
 class FilterLongLines(Filter):
@@ -21,20 +21,18 @@ class FilterLongLines(Filter):
 
     def __init__(
         self,
-        weight: float,
+        confidence_multiplier: float,
         dropoff_start: int,
-        reduction_per_word: float,
     ):
-        super().__init__(weight)
+        super().__init__(confidence_multiplier)
         self.dropoff_start = dropoff_start
-        self.reduction_per_word = reduction_per_word
 
     def apply(self, lines: List[Line]) -> None:
         for line in lines:
             length = len(line.words)
             if len(line.words) > self.dropoff_start:
                 line.analysis.category_confidence *= 1 - (
-                    self.reduction_per_word * (length - self.dropoff_start)
+                    (length - self.dropoff_start) * self.confidence_multiplier
                 )
 
 
@@ -44,7 +42,7 @@ class FilterContainsNumbers(Filter):
     def apply(self, lines: List[Line]) -> None:
         for line in lines:
             if any(char.isdigit() for char in line.text):
-                line.analysis.category_confidence *= self.weight
+                line.analysis.category_confidence *= self.confidence_multiplier
 
 
 class FilterStartWithCapital(Filter):
@@ -53,7 +51,7 @@ class FilterStartWithCapital(Filter):
     def apply(self, lines: List[Line]) -> None:
         for line in lines:
             if not line.text[0].isupper():
-                line.analysis.category_confidence *= self.weight
+                line.analysis.category_confidence *= self.confidence_multiplier
 
 
 class FilterByOCRConfidence(Filter):
@@ -62,14 +60,14 @@ class FilterByOCRConfidence(Filter):
     def apply(self, lines: List[Line]) -> None:
         for line in lines:
             if any(word.confidence == "Low" for word in line.words):
-                line.analysis.category_confidence *= self.weight
+                line.analysis.category_confidence *= self.confidence_multiplier
 
 
 class FilterDuplicateText(Filter):
     """Filters duplicate lines of text."""
 
-    def __init__(self, weight: float, pattern: str = r"[^a-zA-Z0-9\s]"):
-        super().__init__(weight)
+    def __init__(self, confidence_multiplier: float, pattern: str = r"[^a-zA-Z0-9\s]"):
+        super().__init__(confidence_multiplier)
         self.pattern = pattern
 
     def apply(self, lines: List[Line]) -> None:
@@ -77,27 +75,27 @@ class FilterDuplicateText(Filter):
         text_counter = Counter([regex.sub("", line.text) for line in lines])
         for line in lines:
             if text_counter[regex.sub("", line.text)] > 1:
-                line.analysis.category_confidence *= self.weight
+                line.analysis.category_confidence *= self.confidence_multiplier
 
 
 class FilterByEnding(Filter):
     """Filters lines based on their ending."""
 
-    def __init__(self, weight: float, unlikely_endings: List[str]):
-        super().__init__(weight)
+    def __init__(self, confidence_multiplier: float, unlikely_endings: List[str]):
+        super().__init__(confidence_multiplier)
         self.unlikely_endings = unlikely_endings
 
     def apply(self, lines: List[Line]) -> None:
         for line in lines:
             if line.text[-1] in self.unlikely_endings:
-                line.analysis.category_confidence *= self.weight
+                line.analysis.category_confidence *= self.confidence_multiplier
 
 
 class FilterFontSize(Filter):
     """Filters based on font size. Penalizes lines with font size below the a certain percentile and rewards lines with font size above the percentile."""
 
-    def __init__(self, weight: float, percentile=0.75):
-        super().__init__(weight)
+    def __init__(self, confidence_multiplier: float, percentile=0.75):
+        super().__init__(confidence_multiplier)
         self.percentile = percentile
 
     def apply(self, lines: List[Line]) -> None:
@@ -120,9 +118,13 @@ class FilterFontSize(Filter):
             relative_distance = abs(percentile_height - font_size) / percentile_height
 
             if font_size > percentile_height:
-                line.analysis.category_confidence *= 1 + self.weight * relative_distance
+                line.analysis.category_confidence *= (
+                    1 + self.confidence_multiplier * relative_distance
+                )
             else:
-                line.analysis.category_confidence *= 1 - self.weight * relative_distance
+                line.analysis.category_confidence *= (
+                    1 - self.confidence_multiplier * relative_distance
+                )
 
 
 class FilterSameRowAsSomethingelse(Filter):
@@ -130,10 +132,10 @@ class FilterSameRowAsSomethingelse(Filter):
 
     def __init__(
         self,
-        weight: float,
+        confidence_multiplier: float,
         lines_to_pages: Dict[int, int],
     ):
-        super().__init__(weight)
+        super().__init__(confidence_multiplier)
         self.lines_to_pages = lines_to_pages
 
     def _in_same_row(self, y: float, other_line: Line) -> bool:
@@ -154,11 +156,11 @@ class FilterSameRowAsSomethingelse(Filter):
             if i != 0:
                 prev_line: Line = with_center_and_page[i - 1][0]
                 if self._in_same_row(e[1], prev_line):
-                    e[0].analysis.category_confidence *= self.weight
+                    e[0].analysis.category_confidence *= self.confidence_multiplier
             if i != len(with_center_and_page) - 1:
                 next_line = with_center_and_page[i + 1][0]
                 if self._in_same_row(e[1], next_line):
-                    e[0].analysis.category_confidence *= self.weight
+                    e[0].analysis.category_confidence *= self.confidence_multiplier
 
     def apply(self, lines: List[Line]):
         with_center_and_page = self._calculate_center_y(lines)

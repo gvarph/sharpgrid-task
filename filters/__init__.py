@@ -22,16 +22,16 @@ def get_possible_categories(
         List[Line]: A list of lines with category confidence above the provided threshold.
     """
     line_filter = LineFilter(
-        FilterPriceLines(0.5),
-        FilterLongLines(0.1, dropoff_start=6, reduction_per_word=0.2),
-        FilterContainsNumbers(0.5),
-        FilterStartWithCapital(0.5),
-        FilterByOCRConfidence(0.3),
-        FilterDuplicateText(0.5),
+        FilterPriceLines(1),
+        FilterLongLines(1, dropoff_start=6),
+        FilterContainsNumbers(1),
+        FilterStartWithCapital(1),
+        FilterByOCRConfidence(1),
+        FilterDuplicateText(1),
         FilterByEnding(
-            0.8, unlikely_endings=[".", ",", ";", "!", "?", ")", "]", "}", "-"]
+            1, unlikely_endings=[".", ",", ";", "!", "?", ")", "]", "}", "-"]
         ),
-        FilterFontSize(0.1, percentile=0.75),
-        FilterSameRowAsSomethingelse(0.75, lines_to_pages),
+        FilterFontSize(1, percentile=0.75),
+        FilterSameRowAsSomethingelse(1, lines_to_pages),
     )
     return line_filter.get_possible_categories(menu, conf_threshold)
