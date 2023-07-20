@@ -108,6 +108,15 @@ class FilterStartWithCapital(Filter):
                 line.analysis.category_confidence *= self.weight
 
 
+class FilterByOCRConfidence(Filter):
+    """Filters lines based on readability. This is decided by checking if the OCR confidence is low."""
+
+    def apply(self, lines: List[Line]) -> None:
+        for line in lines:
+            if any(word.confidence == "Low" for word in line.words):
+                line.analysis.category_confidence *= self.weight
+
+
 def get_possible_categories(
     menu: Menu,
     conf_treshold=0.75,  # randomly chosen value
@@ -117,5 +126,6 @@ def get_possible_categories(
         FilterLongLines(0.1, dropoff_start=6, reduction_per_word=0.2),
         FilterContainsNumbers(0.5),
         FilterStartWithCapital(0.5),
+        FilterByOCRConfidence(0.3),
     )
     return line_filter.get_possible_categories(menu, conf_treshold)
