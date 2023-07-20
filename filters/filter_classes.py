@@ -1,6 +1,6 @@
 from collections import Counter
 import re
-from typing import List, Tuple
+from typing import List, Tuple, Dict
 
 from scan_classes import Line
 from .base import Filter
@@ -39,7 +39,7 @@ class FilterLongLines(Filter):
 
 
 class FilterContainsNumbers(Filter):
-    """Filters lines containing numbers"""
+    """Filters lines containing numbers."""
 
     def apply(self, lines: List[Line]) -> None:
         for line in lines:
@@ -48,6 +48,8 @@ class FilterContainsNumbers(Filter):
 
 
 class FilterStartWithCapital(Filter):
+    """Penalizes lines that do not start with a capital letter."""
+
     def apply(self, lines: List[Line]) -> None:
         for line in lines:
             if not line.text[0].isupper():
@@ -71,7 +73,6 @@ class FilterDuplicateText(Filter):
         self.pattern = pattern
 
     def apply(self, lines: List[Line]) -> None:
-        # compiles the pattern into a regex object
         regex = re.compile(self.pattern)
         text_counter = Counter([regex.sub("", line.text) for line in lines])
         for line in lines:
@@ -130,7 +131,7 @@ class FilterSameRowAsSomethingelse(Filter):
     def __init__(
         self,
         weight: float,
-        lines_to_pages: dict[int, int],
+        lines_to_pages: Dict[int, int],
     ):
         super().__init__(weight)
         self.lines_to_pages = lines_to_pages
