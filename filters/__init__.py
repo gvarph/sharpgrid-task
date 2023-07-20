@@ -8,7 +8,7 @@ from .base import LineFilter
 def get_possible_categories(
     menu: Menu,
     lines_to_pages: dict[int, int],
-    conf_treshold=0.75,  # randomly chosen value
+    conf_threshold=0.75,  # randomly chosen valueba
 ) -> List[Line]:
     line_filter = LineFilter(
         FilterPriceLines(0.5),
@@ -23,4 +23,4 @@ def get_possible_categories(
         FilterFontSize(0.1, percentile=0.75),
         FilterSameRowAsSomethingelse(0.75, lines_to_pages),
     )
-    return line_filter.get_possible_categories(menu, conf_treshold)
+    return line_filter.get_possible_categories(menu, conf_threshold)
