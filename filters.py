@@ -178,8 +178,50 @@ class FilterFontSize(Filter):
                 line.analysis.category_confidence *= 1 - self.weight * relative_distance
 
 
+class FilterSameRowAsSomethingelse(Filter):
+    """Filters lines that are in the same row as something else."""
+
+    def __init__(
+        self,
+        weight: float,
+        lines_to_pages: dict[int, int],
+    ):
+        super().__init__(weight)
+        self.lines_to_pages = lines_to_pages
+
+    def _in_same_row(self, y: float, other_line: Line) -> bool:
+        other_line_top: float = other_line.bounding_box.points[3].y
+        other_line_bottom = other_line.bounding_box.points[0].y
+        return other_line_top > y > other_line_bottom
+
+    def _calculate_center_y(self, lines: List[Line]) -> List[Tuple[Line, float, int]]:
+        with_center_and_page: List[Tuple[Line, float, int]] = []
+        for line in lines:
+            y = sum(point.y for point in line.bounding_box.points) / 4
+            page_num = self.lines_to_pages[id(line)]
+            with_center_and_page.append((line, y, page_num))
+        return with_center_and_page
+
+    def _adjust_confidence(self, with_center_and_page: List[Tuple[Line, float, int]]):
+        for i, e in enumerate(with_center_and_page):
+            if i != 0:
+                prev_line: Line = with_center_and_page[i - 1][0]
+                if self._in_same_row(e[1], prev_line):
+                    e[0].analysis.category_confidence *= self.weight
+            if i != len(with_center_and_page) - 1:
+                next_line = with_center_and_page[i + 1][0]
+                if self._in_same_row(e[1], next_line):
+                    e[0].analysis.category_confidence *= self.weight
+
+    def apply(self, lines: List[Line]):
+        with_center_and_page = self._calculate_center_y(lines)
+        with_center_and_page.sort(key=lambda x: (x[2], x[1]))
+        self._adjust_confidence(with_center_and_page)
+
+
 def get_possible_categories(
     menu: Menu,
+    lines_to_pages: dict[int, int],
     conf_treshold=0.75,  # randomly chosen value
 ) -> List[Line]:
     line_filter = LineFilter(
@@ -193,5 +235,6 @@ def get_possible_categories(
             0.8, unlikely_endings=[".", ",", ";", "!", "?", ")", "]", "}", "-"]
         ),
         FilterFontSize(0.1, percentile=0.75),
+        FilterSameRowAsSomethingelse(0.75, lines_to_pages),
     )
     return line_filter.get_possible_categories(menu, conf_treshold)

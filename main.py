@@ -57,7 +57,7 @@ def main():
         id(line): page.page_num for page in menu.pages for line in page.lines
     }
 
-    lines = get_possible_categories(menu, CONF_THRESHOLD)
+    lines = get_possible_categories(menu, lines_to_pages, CONF_THRESHOLD)
     # iterate over all lines and their pages
     counter = 0
     for line in lines:
