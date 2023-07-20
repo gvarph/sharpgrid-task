@@ -133,6 +133,19 @@ class FilterDuplicateText(Filter):
                 line.analysis.category_confidence *= self.weight
 
 
+class FilterByEnding(Filter):
+    """Filters lines based on their ending."""
+
+    def __init__(self, weight: float, unlikely_endings: List[str]):
+        super().__init__(weight)
+        self.unlikely_endings = unlikely_endings
+
+    def apply(self, lines: List[Line]) -> None:
+        for line in lines:
+            if line.text[-1] in self.unlikely_endings:
+                line.analysis.category_confidence *= self.weight
+
+
 def get_possible_categories(
     menu: Menu,
     conf_treshold=0.75,  # randomly chosen value
@@ -144,5 +157,8 @@ def get_possible_categories(
         FilterStartWithCapital(0.5),
         FilterByOCRConfidence(0.3),
         FilterDuplicateText(0.5),
+        FilterByEnding(
+            0.8, unlikely_endings=[".", ",", ";", "!", "?", ")", "]", "}", "-"]
+        ),
     )
     return line_filter.get_possible_categories(menu, conf_treshold)
