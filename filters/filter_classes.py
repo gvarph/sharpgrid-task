@@ -1,63 +1,9 @@
-from abc import ABC, abstractmethod
 from collections import Counter
 import re
-from typing import Tuple
-from scan_classes import *
+from typing import List, Tuple
 
-
-class Filter(ABC):
-    """Abstract base class for filters with an abstract method `apply()`."""
-
-    def __init__(self, weight: float):
-        """Initialize the Filter with a weight parameter."""
-        self.weight = weight
-
-    @abstractmethod
-    def apply(self, lines: List[Line]):
-        """Apply the filter on a given list of lines."""
-        raise NotImplementedError
-
-
-class LineFilter:
-    """
-    LineFilter is used to apply multiple filters on lines.
-
-    Args:
-        filters (Filter): Filters to be applied.
-    """
-
-    def __init__(self, *filters: Filter):
-        self.filters = filters
-
-    def get_possible_categories(self, menu: Menu, conf_threshold=0.76) -> List[Line]:
-        """
-        Filters the lines and returns those with category_confidence above the conf_threshold.
-
-        Args:
-            menu (Menu): The menu that contains the lines to be filtered.
-            conf_threshold (float): The minimum category_confidence for a line to be considered.
-
-        Returns:
-            List[Line]: Lines with category_confidence greater than conf_threshold.
-        """
-
-        def lines_above_confidence() -> List[Line]:
-            return [
-                line
-                for line in lines
-                if line.analysis.category_confidence > conf_threshold
-            ]
-
-        # get all lines
-        lines = [line for page in menu.pages for line in page.lines]
-
-        for filter in self.filters:
-            filter.apply(lines)
-            print(
-                f"{filter.__class__.__name__} - remaining lines:{len(lines_above_confidence())}"
-            )
-
-        return lines_above_confidence()
+from scan_classes import Line
+from .base import Filter
 
 
 class FilterPriceLines(Filter):
@@ -217,24 +163,3 @@ class FilterSameRowAsSomethingelse(Filter):
         with_center_and_page = self._calculate_center_y(lines)
         with_center_and_page.sort(key=lambda x: (x[2], x[1]))
         self._adjust_confidence(with_center_and_page)
-
-
-def get_possible_categories(
-    menu: Menu,
-    lines_to_pages: dict[int, int],
-    conf_treshold=0.75,  # randomly chosen value
-) -> List[Line]:
-    line_filter = LineFilter(
-        FilterPriceLines(0.5),
-        FilterLongLines(0.1, dropoff_start=6, reduction_per_word=0.2),
-        FilterContainsNumbers(0.5),
-        FilterStartWithCapital(0.5),
-        FilterByOCRConfidence(0.3),
-        FilterDuplicateText(0.5),
-        FilterByEnding(
-            0.8, unlikely_endings=[".", ",", ";", "!", "?", ")", "]", "}", "-"]
-        ),
-        FilterFontSize(0.1, percentile=0.75),
-        FilterSameRowAsSomethingelse(0.75, lines_to_pages),
-    )
-    return line_filter.get_possible_categories(menu, conf_treshold)
