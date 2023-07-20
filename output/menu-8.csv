@@ -1,0 +1,20 @@
+text,confidence
+MENU,1
+Demi glace / Demi glace,0.85
+Beef carpaccio with rocket, toast,0.7791179001721175
+Lanyzova omacka / Truffle sauce,0.8265189328743556
+POLEVKY / SOUPS,0.85
+Beef broth with noodles,0.7791179001721165
+Soup of the day,0.8025989672977618
+TESTOVINY / PASTA,0.85
+Penne Bolognese, parmesan,0.7795567986230642
+Ceaser salat with chicken meat,0.8262994836488818
+Spaghetti Pomodoro, mozzarella Buffalo,0.8265189328743547
+Potatoe Crisps with spicy dip,0.7791179001721185
+Herb crusted chicken supreme,0.7791179001721185
+DEZERTY / DESSERTS,0.85
+Pork fillet neck steak Sous Vide,0.7779001721170398
+Pan-Seared Pork tenderloin steak,0.9723752151462997
+Rib Eye Steak,0.9168674698795192
+Monde,1
+restaurant,0.8707788296041279
