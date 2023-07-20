@@ -9,9 +9,18 @@ from .base import Filter
 class FilterPriceLines(Filter):
     """Penalizes lines that look like prices."""
 
+    currency_signs: List[str]
+
+    def __init__(self, confidence_multiplier: float, currency_signs: List[str]):
+        super().__init__(confidence_multiplier)
+        self.currency_signs = [sign.lower() for sign in currency_signs]
+
     def apply(self, lines: List[Line]) -> None:
         for line in lines:
-            if ",-" in line.text and any(char.isdigit() for char in line.text):
+            if any(
+                currency_sign in line.text.lower()
+                for currency_sign in self.currency_signs
+            ):
                 line.analysis.type = "price"
                 line.analysis.category_confidence *= self.confidence_multiplier
 
@@ -45,7 +54,7 @@ class FilterContainsNumbers(Filter):
                 line.analysis.category_confidence *= self.confidence_multiplier
 
 
-class FilterStartWithCapital(Filter):
+class FilterNottartWithCapital(Filter):
     """Penalizes lines that do not start with a capital letter."""
 
     def apply(self, lines: List[Line]) -> None:

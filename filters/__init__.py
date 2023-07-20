@@ -3,6 +3,7 @@ from typing import List
 from scan_classes import Line, Menu
 from .filter_classes import *
 from .base import LineFilter
+from .gpt_filter import MakeAIDoTheFiltering
 
 
 def get_possible_categories(
@@ -21,17 +22,20 @@ def get_possible_categories(
     Returns:
         List[Line]: A list of lines with category confidence above the provided threshold.
     """
+
+    # The higher the number, the the lower the confidence reduction if the filter applies
     line_filter = LineFilter(
-        FilterPriceLines(1),
-        FilterLongLines(1, dropoff_start=6),
-        FilterContainsNumbers(1),
-        FilterStartWithCapital(1),
-        FilterByOCRConfidence(1),
-        FilterDuplicateText(1),
+        FilterPriceLines(0.5, currency_signs=["€", "$", "£", "Kč", "kr", "Kc", ",-"]),
+        FilterLongLines(0.1, dropoff_start=6),
+        FilterContainsNumbers(0.85),
+        FilterNottartWithCapital(0.95),
+        FilterByOCRConfidence(0.8),
+        FilterDuplicateText(0.5),
         FilterByEnding(
-            1, unlikely_endings=[".", ",", ";", "!", "?", ")", "]", "}", "-"]
+            0.75, unlikely_endings=[".", ",", ";", "!", "?", ")", "]", "}", "-"]
         ),
-        FilterFontSize(1, percentile=0.75),
-        FilterSameRowAsSomethingelse(1, lines_to_pages),
+        FilterFontSize(0.75, percentile=0.75),
+        FilterSameRowAsSomethingelse(0.5, lines_to_pages),
+        MakeAIDoTheFiltering(1),
     )
     return line_filter.get_possible_categories(menu, conf_threshold)
