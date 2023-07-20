@@ -146,6 +146,38 @@ class FilterByEnding(Filter):
                 line.analysis.category_confidence *= self.weight
 
 
+class FilterFontSize(Filter):
+    """Filters based on font size. Penalizes lines with font size below the a certain percentile and rewards lines with font size above the percentile."""
+
+    def __init__(self, weight: float, percentile=0.75):
+        super().__init__(weight)
+        self.percentile = percentile
+
+    def apply(self, lines: List[Line]) -> None:
+        lines_with_font_size: List[Tuple[Line, float]] = []
+
+        heights = []
+        for line in lines:
+            left_height = line.bounding_box.points[3].y - line.bounding_box.points[0].y
+            right_height = line.bounding_box.points[2].y - line.bounding_box.points[1].y
+            font_size = (left_height + right_height) / 2
+
+            heights.append(font_size)
+            lines_with_font_size.append((line, font_size))
+
+        heights.sort()
+
+        percentile_height = heights[int(len(heights) * self.percentile)]
+
+        for line, font_size in lines_with_font_size:
+            relative_distance = abs(percentile_height - font_size) / percentile_height
+
+            if font_size > percentile_height:
+                line.analysis.category_confidence *= 1 + self.weight * relative_distance
+            else:
+                line.analysis.category_confidence *= 1 - self.weight * relative_distance
+
+
 def get_possible_categories(
     menu: Menu,
     conf_treshold=0.75,  # randomly chosen value
@@ -160,5 +192,6 @@ def get_possible_categories(
         FilterByEnding(
             0.8, unlikely_endings=[".", ",", ";", "!", "?", ")", "]", "}", "-"]
         ),
+        FilterFontSize(0.1, percentile=0.75),
     )
     return line_filter.get_possible_categories(menu, conf_treshold)
