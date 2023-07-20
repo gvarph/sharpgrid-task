@@ -5,6 +5,10 @@ from typing import List, Tuple, Dict
 from scan_classes import Line
 from .base import Filter
 
+from logger import get_logger
+
+logger = get_logger(__name__)
+
 
 class FilterPriceLines(Filter):
     """Penalizes lines that look like prices."""
@@ -40,8 +44,8 @@ class FilterLongLines(Filter):
         for line in lines:
             length = len(line.words)
             if len(line.words) > self.dropoff_start:
-                line.analysis.category_confidence *= 1 - (
-                    (length - self.dropoff_start) * self.confidence_multiplier
+                line.analysis.category_confidence *= self.confidence_multiplier ** (
+                    length - self.dropoff_start
                 )
 
 
@@ -126,11 +130,7 @@ class FilterFontSize(Filter):
         for line, font_size in lines_with_font_size:
             relative_distance = abs(percentile_height - font_size) / percentile_height
 
-            if font_size > percentile_height:
-                line.analysis.category_confidence *= (
-                    1 + self.confidence_multiplier * relative_distance
-                )
-            else:
+            if font_size < percentile_height:
                 line.analysis.category_confidence *= (
                     1 - self.confidence_multiplier * relative_distance
                 )

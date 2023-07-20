@@ -63,5 +63,16 @@ class LineFilter:
             logger.info(
                 f"{filter.__class__.__name__} - remaining lines:{len(lines_above_confidence())}"
             )
+            for line in lines:
+                if line.analysis.category_confidence > 1:
+                    logger.warning(
+                        f"Line {line.text} has a category confidence of {line.analysis.category_confidence}"
+                    )
+                    line.analysis.category_confidence = 1
+                if line.analysis.category_confidence < 0:
+                    logger.warning(
+                        f"Line {line.text} has a category confidence of {line.analysis.category_confidence}"
+                    )
+                    line.analysis.category_confidence = 0
 
         return lines_above_confidence()
