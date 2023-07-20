@@ -15,7 +15,7 @@ from logger import get_logger
 logger = get_logger(__name__)
 
 CONF_THRESHOLD = 0.76
-OUTPUT_DIR = "output"
+OUTPUT_DIR = "output_gpt"
 
 
 def get_file_paths(menu_json_path):

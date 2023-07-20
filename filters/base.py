@@ -60,7 +60,7 @@ class LineFilter:
 
         for filter in self.filters:
             filter.apply(lines)
-            logger.info(
+            logger.debug(
                 f"{filter.__class__.__name__} - remaining lines:{len(lines_above_confidence())}"
             )
             for line in lines:

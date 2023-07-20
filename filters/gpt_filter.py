@@ -41,7 +41,6 @@ class MakeAIDoTheFiltering(Filter):
                 "OPEN_AI_API_KEY not set, the AI based filter will be skipped"
             )
             return
-        logger.debug("Applying GPT-3 filter")
 
         base_prompt = self.create_base_prompt()
         probabilities = self.extract_probabilities(base_prompt, lines)
@@ -113,7 +112,7 @@ class MakeAIDoTheFiltering(Filter):
         index = int(index)
         probability = float(probability)
         # calculate the confidence modifier based on the probability, and scale it's effect based on the weight
-        confidence_multiplier = 1 - (1 - probability) * self.weight
+        confidence_multiplier = 1 - (1 - probability / 100) * self.weight
 
         old_confidence = lines[index].analysis.category_confidence
         lines[index].analysis.category_confidence *= confidence_multiplier

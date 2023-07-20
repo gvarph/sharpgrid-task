@@ -36,6 +36,6 @@ def calculate_confindences(
         ),
         FilterFontSize(0.75, percentile=0.75),
         FilterSameRowAsSomethingelse(0.85, lines_to_pages),
-        # MakeAIDoTheFiltering(1, conf_threshold),
+        MakeAIDoTheFiltering(1, conf_threshold),
     )
     return line_filter.get_possible_categories(menu, conf_threshold)
