@@ -101,4 +101,6 @@ class MakeAIDoTheFiltering(Filter):
                 lines[index].analysis.category_confidence *= confidence_multiplier
                 new_confidence = lines[index].analysis.category_confidence
 
-                # logger.debug(f"'{lines[index].text}'\n\t{probability=}, {self.weight=}, {confidence_multiplier=}\n\t{old_confidence}->{new_confidence}")
+                # logger.debug(
+                #    f"'{lines[index].text}'\n\t{probability=}, {self.weight=}, {confidence_multiplier=}\n\t{old_confidence}->{new_confidence}"
+                # )
