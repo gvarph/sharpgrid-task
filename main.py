@@ -8,6 +8,8 @@ from scan_classes import *
 
 from jpg2pdf import jpg2fitz
 
+from filters import get_possible_categories
+
 
 def main():
     # Retrieve the first argument
@@ -49,12 +51,33 @@ def main():
     else:
         raise ValueError("Invalid file type")
 
-    for m_page in menu.pages:
-        page = doc[m_page.page_num - 1]
-        for line in m_page.lines:
-            line.bounding_box.draw(page, m_page.unit)
+    CONF_THRESHOLD = 0.76
+    # Get all lines linked to page numbers
+    lines_to_pages = {
+        id(line): page.page_num for page in menu.pages for line in page.lines
+    }
 
-    # Save pdf
+    lines = get_possible_categories(menu, CONF_THRESHOLD)
+    # iterate over all lines and their pages
+    counter = 0
+    for line in lines:
+        page = doc[lines_to_pages[id(line)] - 1]
+
+        counter += 1
+
+        line.bounding_box.draw(
+            page,
+            menu.pages[lines_to_pages[id(line)] - 1].unit,
+        )
+
+    print(f"Drawn lines - {counter=}")
+
+    possible_categories = {
+        line.text
+        for line in lines
+        if line.analysis.category_confidence > CONF_THRESHOLD
+    }
+    print(possible_categories)
     doc.save("output.pdf")
 
 

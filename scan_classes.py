@@ -3,7 +3,7 @@ import attr
 from attr.validators import instance_of
 import json
 
-from fitz import Point as FitzPoint
+from fitz import Point as FitzPoint, Rect
 
 SCALES = {"inch": 72, "mm": 2.83465, "pixel": 1}
 
@@ -42,10 +42,17 @@ class Word:
 
 
 @attr.s
+class LineAnalasys:
+    category_confidence: float = attr.ib(default=1)
+    type: Optional[str] = attr.ib(default=None)
+
+
+@attr.s
 class Line:
     text: str = attr.ib()
     bounding_box: BoundingBox = attr.ib()
     words: List[Word] = attr.ib(factory=list)
+    analysis: LineAnalasys = attr.ib(factory=LineAnalasys)
 
     @staticmethod
     def from_json(data: dict) -> "Line":
@@ -55,6 +62,7 @@ class Line:
                 Word(
                     bounding_box=BoundingBox.from_json(word["boundingBox"]),
                     text=word["text"],
+                    confidence=word.get("confidence"),
                 )
                 for word in data["words"]
             ],
