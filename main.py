@@ -6,7 +6,7 @@ from fitz import Document
 
 from scan_classes import *
 
-from jpg2pdf import jpg2fitz
+from img2pdf import img_to_fitz
 
 from filters import get_possible_categories
 
@@ -51,7 +51,7 @@ def main():
     if file_type == "pdf":
         doc: Document = fitz.Document(SOURCE_FILE)
     elif file_type == "jpg":
-        doc: Document = jpg2fitz(SOURCE_FILE)
+        doc: Document = img_to_fitz(SOURCE_FILE)
     else:
         raise ValueError("Invalid file type")
 
