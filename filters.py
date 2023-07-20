@@ -117,6 +117,22 @@ class FilterByOCRConfidence(Filter):
                 line.analysis.category_confidence *= self.weight
 
 
+class FilterDuplicateText(Filter):
+    """Filters duplicate lines of text."""
+
+    def __init__(self, weight: float, pattern: str = r"[^a-zA-Z0-9\s]"):
+        super().__init__(weight)
+        self.pattern = pattern
+
+    def apply(self, lines: List[Line]) -> None:
+        # compiles the pattern into a regex object
+        regex = re.compile(self.pattern)
+        text_counter = Counter([regex.sub("", line.text) for line in lines])
+        for line in lines:
+            if text_counter[regex.sub("", line.text)] > 1:
+                line.analysis.category_confidence *= self.weight
+
+
 def get_possible_categories(
     menu: Menu,
     conf_treshold=0.75,  # randomly chosen value
@@ -127,5 +143,6 @@ def get_possible_categories(
         FilterContainsNumbers(0.5),
         FilterStartWithCapital(0.5),
         FilterByOCRConfidence(0.3),
+        FilterDuplicateText(0.5),
     )
     return line_filter.get_possible_categories(menu, conf_treshold)
