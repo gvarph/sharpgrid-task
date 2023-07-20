@@ -23,10 +23,10 @@ def get_possible_categories(
         List[Line]: A list of lines with category confidence above the provided threshold.
     """
 
-    # The higher the number, the the lower the confidence reduction if the filter applies
+    # The lower the number, the the higher the confidence reduction if the filter applies
     line_filter = LineFilter(
         FilterPriceLines(0.5, currency_signs=["€", "$", "£", "Kč", "kr", "Kc", ",-"]),
-        FilterLongLines(0.1, dropoff_start=6),
+        FilterLongLines(0.1, dropoff_start=5),
         FilterContainsNumbers(0.85),
         FilterNottartWithCapital(0.95),
         FilterByOCRConfidence(0.8),
@@ -35,7 +35,7 @@ def get_possible_categories(
             0.75, unlikely_endings=[".", ",", ";", "!", "?", ")", "]", "}", "-"]
         ),
         FilterFontSize(0.75, percentile=0.75),
-        FilterSameRowAsSomethingelse(0.5, lines_to_pages),
-        MakeAIDoTheFiltering(1),
+        FilterSameRowAsSomethingelse(0.25, lines_to_pages),
+        MakeAIDoTheFiltering(1, conf_threshold),
     )
     return line_filter.get_possible_categories(menu, conf_threshold)

@@ -16,13 +16,23 @@ TOKEN_LIMIT = 3500
 
 
 class MakeAIDoTheFiltering(Filter):
-    def __init__(self, weight: float):
+    """Leverages GPT-3 to to check if a line is a category or not. This honestly doesn't work very well, but it's a cool idea.
+
+    Args:
+        conf_threshold (float, optional): The maximum treshold for a line to be considered a processed using GPT-3, reducing this value will use less tokens.
+        Defaults to 1.
+    """
+
+    conf_threshold: float
+
+    def __init__(self, weight: float, conf_threshold: float = 1):
         if OPEN_AI_API_KEY:
             openai.api_key = OPEN_AI_API_KEY
         else:
             logger.warning("OPEN_AI_API_KEY not set, GPT-3 will not work")
 
         self.weight = weight
+        self.conf_threshold = conf_threshold
 
     def apply(self, lines):
         if not OPEN_AI_API_KEY:
@@ -30,25 +40,26 @@ class MakeAIDoTheFiltering(Filter):
                 "OPEN_AI_API_KEY not set, the AI based filter will be skipped"
             )
             return
+        logger.debug("Applying GPT-3 filter")
 
-        re_get_probabilities = re.compile(r"\d*: 0\.\d{1,2}")
+        re_get_probabilities = re.compile(r"\d+: \d{1,3}")
 
-        base_prompt = """Given a list of strings from a restaurant menu, classify them as likely (1) or unlikely (0) to be a menu category. For example, categories could include 'Polevky', 'Wafle', or 'Vino', whereas specific items or prices are not categories.
+        base_prompt = """Classify restaurant menu strings as probable (100) or improbable (0) menu categories. 'Polevky', 'Wafle', 'Vino' are examples of categories, while specific items or prices aren't. Output should follow \\d+: \\d{1,3} format, with the first number being the ID and the second the category likelihood percentage.
 
-Example input:
-0: Soups
-1: Wafle
-2: Wafle s grilovanou slaninou
-3: 5.99,-
-4: Hot drinks
-Example output based on the above input:
-0: 0.99
-1: 0.75
-2: 0.15
-3: 0.01
-4: 0.95
+        Example input:
+        0: Soups
+        1: Wafle
+        2: Wafle s grilovanou slaninou
+        3: 5.99,-
+        4: Hot drinks
+        Example output based on the above input:
+        0: 99
+        1: 75
+        2: 15
+        3: 01
+        4: 95
 
-provide a similar output for the following all of the following lines:
+        provide a similar output for the following all of the following lines:
         """
         id = 0
         while id < len(lines):
@@ -58,7 +69,7 @@ provide a similar output for the following all of the following lines:
                 id += 1
                 line = lines[i]
                 # no reason to use up tokens on lines that are already filtered out
-                if line.analysis.category_confidence < 0.5:
+                if line.analysis.category_confidence < self.conf_threshold:
                     continue
 
                 prompt += f"\n{i}: {line.text}"
@@ -90,6 +101,4 @@ provide a similar output for the following all of the following lines:
                 lines[index].analysis.category_confidence *= confidence_multiplier
                 new_confidence = lines[index].analysis.category_confidence
 
-                logger.debug(
-                    f"'{lines[index].text}'\n\t{probability=}, {self.weight=}, {confidence_multiplier=}\n\t{old_confidence}->{new_confidence}"
-                )
+                # logger.debug(f"'{lines[index].text}'\n\t{probability=}, {self.weight=}, {confidence_multiplier=}\n\t{old_confidence}->{new_confidence}")
