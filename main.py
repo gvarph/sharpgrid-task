@@ -10,6 +10,10 @@ from jpg2pdf import jpg2fitz
 
 from filters import get_possible_categories
 
+from logger import get_logger
+
+logger = get_logger(__name__)
+
 
 def main():
     # Retrieve the first argument
@@ -70,14 +74,14 @@ def main():
             menu.pages[lines_to_pages[id(line)] - 1].unit,
         )
 
-    print(f"Drawn lines - {counter=}")
-
     possible_categories = {
         line.text
         for line in lines
         if line.analysis.category_confidence > CONF_THRESHOLD
     }
-    print(possible_categories)
+
+    logger.info(f"Found {counter} lines that could be categories")
+
     doc.save("output.pdf")
 
 

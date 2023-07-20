@@ -1,6 +1,10 @@
 from abc import ABC, abstractmethod
 from scan_classes import *
 
+from logger import get_logger
+
+logger = get_logger(__name__)
+
 
 class Filter(ABC):
     """Abstract base class for filters with an abstract method `apply()`."""
@@ -50,7 +54,7 @@ class LineFilter:
 
         for filter in self.filters:
             filter.apply(lines)
-            print(
+            logger.info(
                 f"{filter.__class__.__name__} - remaining lines:{len(lines_above_confidence())}"
             )
 
