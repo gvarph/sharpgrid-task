@@ -10,6 +10,8 @@ python = "^3.11"
 attrs = "^23.1.0"
 pymupdf = "^1.22.5"
 pillow = "^10.0.0"
+colorlog = "^6.7.0"
+python-dotenv = "^1.0.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.7.0"
