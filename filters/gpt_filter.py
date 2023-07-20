@@ -19,20 +19,21 @@ class MakeAIDoTheFiltering(Filter):
     """Leverages GPT-3 to to check if a line is a category or not. This honestly doesn't work very well, but it's a cool idea.
 
     Args:
-        conf_threshold (float, optional): The maximum treshold for a line to be considered a processed using GPT-3, reducing this value will use less tokens.
+        conf_threshold (float, optional): The maximum threshold for a line to be considered a processed using GPT-3, reducing this value will use less tokens.
         Defaults to 1.
     """
 
-    conf_threshold: float
-
     def __init__(self, weight: float, conf_threshold: float = 1):
+        self.set_openai_api_key()
+        self.weight = weight
+        self.conf_threshold = conf_threshold
+
+    @staticmethod
+    def set_openai_api_key():
         if OPEN_AI_API_KEY:
             openai.api_key = OPEN_AI_API_KEY
         else:
             logger.warning("OPEN_AI_API_KEY not set, GPT-3 will not work")
-
-        self.weight = weight
-        self.conf_threshold = conf_threshold
 
     def apply(self, lines):
         if not OPEN_AI_API_KEY:
@@ -42,9 +43,15 @@ class MakeAIDoTheFiltering(Filter):
             return
         logger.debug("Applying GPT-3 filter")
 
-        re_get_probabilities = re.compile(r"\d+: \d{1,3}")
+        base_prompt = self.create_base_prompt()
+        probabilities = self.extract_probabilities(base_prompt, lines)
 
-        base_prompt = """Classify restaurant menu strings as probable (100) or improbable (0) menu categories. 'Polevky', 'Wafle', 'Vino' are examples of categories, while specific items or prices aren't. Output should follow \\d+: \\d{1,3} format, with the first number being the ID and the second the category likelihood percentage.
+        for p in probabilities:
+            self.update_line_confidence(p, lines)
+
+    @staticmethod
+    def create_base_prompt():
+        return """Classify restaurant menu strings as probable (100) or improbable (0) menu categories. 'Polevky', 'Wafle', 'Vino' are examples of categories, while specific items or prices aren't. Output should follow \\d+: \\d{1,3} format, with the first number being the ID and the second the category likelihood percentage.
 
         Example input:
         0: Soups
@@ -61,46 +68,56 @@ class MakeAIDoTheFiltering(Filter):
 
         provide a similar output for the following all of the following lines:
         """
+
+    def extract_probabilities(self, base_prompt, lines):
+        re_get_probabilities = re.compile(r"\d+: \d{1,3}")
         id = 0
+        probabilities = []
         while id < len(lines):
-            prompt = base_prompt + "\n\n"
+            prompt, id = self.create_prompt(id, base_prompt, lines)
+            content = self.get_content_from_openai(prompt)
+            probabilities += re_get_probabilities.findall(content)
+        return probabilities
 
-            for i in range(id, len(lines)):
-                id += 1
-                line = lines[i]
-                # no reason to use up tokens on lines that are already filtered out
-                if line.analysis.category_confidence < self.conf_threshold:
-                    continue
+    def create_prompt(self, id, base_prompt, lines):
+        prompt = base_prompt + "\n\n"
 
-                prompt += f"\n{i}: {line.text}"
+        for i in range(id, len(lines)):
+            id += 1
+            line = lines[i]
+            # no reason to use up tokens on lines that are already filtered out
+            if line.analysis.category_confidence < self.conf_threshold:
+                continue
 
-                #  1 token is approximately 4 characters (see: https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them)
-                if len(prompt) / 4 > TOKEN_LIMIT:
-                    break
+            prompt += f"\n{i}: {line.text}"
 
-            logger.info(
-                f"Sending approximately {len(prompt) / 4} tokens to GPT-3, this may take a while"
-            )
-            response = openai.ChatCompletion.create(
-                model=MODEL_ID,
-                messages=[{"role": "user", "content": prompt}],
-            )
+            #  1 token is approximately 4 characters
+            if len(prompt) / 4 > TOKEN_LIMIT:
+                break
 
-            content = response["choices"][0]["message"]["content"]  # type: ignore
+        logger.info(
+            f"Sending approximately {len(prompt) / 4} tokens to GPT-3, this may take a while"
+        )
+        return prompt, id
 
-            probabilities = re_get_probabilities.findall(content)
+    @staticmethod
+    def get_content_from_openai(prompt):
+        response = openai.ChatCompletion.create(
+            model=MODEL_ID,
+            messages=[{"role": "user", "content": prompt}],
+        )
+        return response["choices"][0]["message"]["content"]  # type: ignore
 
-            for p in probabilities:
-                index, probability = p.split(": ")
-                index = int(index)
-                probability = float(probability)
-                # calculate the confidence modifier based on the probability, and scale it's effect based on the weight
-                confidence_multiplier = 1 - (1 - probability) * self.weight
+    def update_line_confidence(self, p, lines):
+        index, probability = p.split(": ")
+        index = int(index)
+        probability = float(probability)
+        # calculate the confidence modifier based on the probability, and scale it's effect based on the weight
+        confidence_multiplier = 1 - (1 - probability) * self.weight
 
-                old_confidence = lines[index].analysis.category_confidence
-                lines[index].analysis.category_confidence *= confidence_multiplier
-                new_confidence = lines[index].analysis.category_confidence
+        old_confidence = lines[index].analysis.category_confidence
+        lines[index].analysis.category_confidence *= confidence_multiplier
+        new_confidence = lines[index].analysis.category_confidence
 
-                # logger.debug(
-                #    f"'{lines[index].text}'\n\t{probability=}, {self.weight=}, {confidence_multiplier=}\n\t{old_confidence}->{new_confidence}"
-                # )
+        # Uncomment this line to enable detailed logging.
+        # logger.debug(f"'{lines[index].text}'\n\t{probability=}, {self.weight=}, {confidence_multiplier=}\n\t{old_confidence}->{new_confidence}")
