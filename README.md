@@ -4,6 +4,8 @@ This is a project I made for a coding task for SharpGrid. It is a python script 
 
 I have also implemented something that highlights the lines that may be categories onto the pdf.
 
+I have parallelizing the script, but the only part that takes any significant amount of time is are the requests to OpenAI, and those don't have a official way to be parallelized, so I would have to manually write the queries to the API, which would take a lot of time. The endpoint is also rate limited, so it would not be that much faster.
+
 ## How to run the project
 
 ### Prerequisites
