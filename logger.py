@@ -1,6 +1,6 @@
 import logging
 
-from env import LOG_LEVEL
+from conf import LOG_LEVEL
 from colorlog import ColoredFormatter
 
 

@@ -3,18 +3,7 @@ from PIL import Image
 import fitz
 import tempfile
 
-ALLOWED_EXTENSIONS = [
-    "JPEG",
-    "JPG",
-    "PNG",
-    "BMP",
-    "GIF",
-    "TIFF",
-    "WebP",
-    "PPM",
-    "PBM",
-    "PSD",
-]
+from conf import IMG_EXTENSIONS
 
 
 def img_file_to_pdf_file(image_path, output_path, resolution=72.0):
@@ -28,10 +17,10 @@ def img_file_to_pdf_file(image_path, output_path, resolution=72.0):
 
 def img_to_fitz(image_path: str):
     _, ext = os.path.splitext(image_path)
-    if ext.upper()[1:] not in ALLOWED_EXTENSIONS:
+    if ext.upper()[1:] not in IMG_EXTENSIONS:
         raise Exception(
             "Image file type not supported. Allowed types are: {}".format(
-                ", ".join(ALLOWED_EXTENSIONS)
+                ", ".join(IMG_EXTENSIONS)
             )
         )
 

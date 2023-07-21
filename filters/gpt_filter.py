@@ -1,18 +1,12 @@
 import re
 import openai
 
-from env import OPEN_AI_API_KEY
+from conf import OPEN_AI_API_KEY, MODEL_ID, TOKEN_LIMIT
 from logger import get_logger
 
 from .base import Filter
 
 logger = get_logger("gpt_filter")
-
-
-MODEL_ID = "gpt-3.5-turbo"
-
-# limit is 4096 tokens, but we will use 3500 to be safe
-TOKEN_LIMIT = 3500
 
 
 class MakeAIDoTheFiltering(Filter):

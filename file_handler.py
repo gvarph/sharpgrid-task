@@ -3,10 +3,10 @@ import os
 import fitz
 from fitz import Document
 import json
-from env import OPEN_AI_API_KEY
+from conf import IMG_EXTENSIONS, OPEN_AI_API_KEY
 
 from scan_classes import *
-from img2pdf import img_to_fitz, ALLOWED_EXTENSIONS as IMG_EXTENSIONS
+from img2pdf import img_to_fitz
 from logger import get_logger
 
 logger = get_logger(__name__)
@@ -30,7 +30,7 @@ def get_source_file(json_path):
     # Go through each file and assign it to the appropriate variable based on its extension
     for file in matching_files:
         file_upper = file.upper()
-        for ext in IMG_EXTENSIONS + ["PDF"]:
+        for ext in IMG_EXTENSIONS:
             if file_upper.endswith("." + ext):
                 source_file = file
                 break

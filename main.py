@@ -1,5 +1,6 @@
 import os
 import sys
+from conf import CONF_THRESHOLD
 from file_handler import load_ocr_data, save
 
 from scan_classes import *
@@ -8,8 +9,6 @@ from logger import get_logger
 
 
 logger = get_logger(__name__)
-
-CONF_THRESHOLD = 0.76
 
 
 def process_ocr(path):

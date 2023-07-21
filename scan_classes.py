@@ -3,9 +3,9 @@ import attr
 from attr.validators import instance_of
 import json
 
-from fitz import Point as FitzPoint, Rect
+from fitz import Point as FitzPoint
 
-SCALES = {"inch": 72, "mm": 2.83465, "pixel": 1}
+from conf import PDF_SCALES as SCALES
 
 
 @attr.s
