@@ -32,8 +32,6 @@ class MakeAIDoTheFiltering(Filter):
     def set_openai_api_key():
         if OPEN_AI_API_KEY:
             openai.api_key = OPEN_AI_API_KEY
-        else:
-            logger.warning("OPEN_AI_API_KEY not set, GPT-3 will not work")
 
     def apply(self, lines):
         if not OPEN_AI_API_KEY:
