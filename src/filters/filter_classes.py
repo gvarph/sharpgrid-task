@@ -2,7 +2,7 @@ from collections import Counter
 import re
 from typing import List, Tuple, Dict
 
-from src.models import Line
+from models import Line
 from .base import Filter
 
 from logger import get_logger

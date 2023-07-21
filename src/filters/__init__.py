@@ -1,6 +1,6 @@
 from typing import List
 
-from src.models import Line, Menu
+from models import Line, Menu
 from .filter_classes import *
 from .base import LineFilter
 from .gpt_filter import MakeAIDoTheFiltering

@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Tuple
-from src.models import *
+from models import *
 
 from logger import get_logger
 
