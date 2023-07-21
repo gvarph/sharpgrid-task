@@ -1,9 +1,109 @@
 text,confidence
-Polevky,1.0
-Nase rybi speciality,1.0
-a slaninovymi zavitky se svestkami,0.8075
-zdobeny citronem,0.7625964433167047
-Speciality nasi kuchyne,1.0
-s hermelinem a brusinkami,0.7738483786340966
-slaninou a domacimi bramborovymi plackami,0.8075
-Doporucujeme omacky: hribkova, spenatovo-nivova, cesnekova,0.9723894718733891
+Polevky,0.99
+Nase rybi speciality,0.99
+z Jihoceskych rybniku,0.7524
+a slaninovymi zavitky se svestkami,0.7994249999999999
+zdobeny citronem,0.7549704788835376
+Speciality nasi kuchyne,0.99
+s hermelinem a brusinkami,0.7661098948477556
+slaninou a domacimi bramborovymi plackami,0.7994249999999999
+Doporucujeme omacky: hribkova, spenatovo-nivova, cesnekova,0.9626655771546552
+31. 200g Domaci bramborak,0.7772493108119743
+do parmske sunky,0.7994249999999999
+prelita brusinkovym dipem,0.7994249999999999
+s pecenou repouv balzamikovem octu,0.7662130375881653
+domacim bramborovym slaatem s majorankou,0.7994249999999999
+Pergamen plny grilovanych mas,0.99
+Steaky z veproviny,0.8415
+se susenymi rajcaty,0.7549704788835376
+Jidla na objednavku den predem,0.792
+do zlatova osmazenou cibulkou,0.7551767643643571
+houskoveho, bramboroveho, spekoveho knedliku, bileho nebo,0.7524
+Zahranicni speciality,0.99
+specialnimi omackami a rozpecenou bagetkou,0.7994249999999999
+pecene brambory a bagetky,0.7994249999999999
+Speciality vojevudcu a hejtmanu,0.99
+steakove hranolky a cerstva zelenina,0.7549704788835376
+Z kuchyne nasich,0.99
+Slovenskych bratri,0.99
+a rozpecene slaniny,0.7994249999999999
+a kysanym zelim,0.788285584035784
+Bezmasa jidla,0.99
+83. 200g Svycarske syrove fondue,0.7994249999999999
+Speciality,0.99
+a syrem "Grana Padano",0.7994249999999999
+Nase salaty,0.99
+a platky pomerance,0.7994249999999999
+pecena kureci prsa,0.7772493108119743
+Prilohy,0.99
+sypane slunecnicovym a sezamovym seminkem,0.7549704788835376
+Napojovy listek,0.99
+Aperitivy,0.9763327885773282
+Becherovka Original,0.818157169275762
+Campari,0.7597458068123181
+Cinzano Bianco, Rosso, Extra Dry,0.8064314682607959
+Sekty,0.8939463271976618
+Bohemia sekt Prestige, Demi, Brut,0.8181571692757634
+Champagne,0.9349479614656815
+Dom Perigon - Champagne,0.8415
+Bourbon, Whisky,0.99
+Maker's Mark,0.7714715078272847
+Jacka Daniels Honey,0.8298828702907292
+Scotch Whisky Blended,0.9763327885773284
+Passport Scotch,0.7714715078272847
+The Famous Grouse,0.7714715078272847
+J. Walker Red Label,0.8181571692757624
+Irish Whiskey,0.99
+Jameson Caskmates,0.7829800662308631
+Jameson Select Reserve Black barell,0.7948143385515232
+Bushmills single malt,0.8298828702907316
+Vodka,0.8662287115086886
+Absolut, Kurant, Citron, Ruby Red,0.8415
+Russian Standard Original,0.8181571692757624
+Russian Standard-Imperia Platinum,0.7948143385515236
+Koskenkorva Peach,0.7948143385515232
+Gin,0.8250993462927926
+Havana Club Rum,0.9212807500430094
+Havana Club Anejo Especial,0.8415
+Havana Barel Proof,0.8415
+Havana Club Seleccion de Maestros,0.7947057672458292
+Rum,0.7975094615516957
+Matusalem Gran Reserva,0.794922909857217
+Cognac,0.8800236538792372
+Maretll Cordon Bleu,0.7830886375365574
+Remy Martin Coeur de Cognac,0.8181571692757624
+Godet XO,0.783088637536557
+Metaxa,0.8662287115086897
+Metaxa honey,0.7714715078272847
+Tequila,0.9349479614656815
+Olmeca blanco, reposado,0.783088637536557
+Olmeca Plata, reposado,0.9762050576294561
+Likery bylinne,0.99
+Becherovka,0.7714715078272849
+Becherovka Lemond,0.771471507827285
+Jagermeister ledove namrazeny,0.8415
+R Hill Alpsky,0.8415
+Likery,0.9074858076724599
+Pisang Ambon,0.7714715078272847
+Berentzen - Saurer apfel,0.841391428694306
+Peprmintovy liker,0.783088637536557
+Puschkin Time warp, Black,0.8415
+Michane napoje,0.99
+Maxi drink pro vice osob,0.99
+MaxiMojito,0.9073580767245835
+Pivo tocene,0.8800236538792381
+Nealko pivo,0.9763327885773267
+Nealko napoje,0.9350756924135573
+Pepsi light,0.8181571692757624
+Cafe Reserva,0.9350756924135573
+Videnska kava,0.7713629365215908
+Turecka kava,0.8065400395664898
+Alzirska kava,0.7947057672458292
+Irska kava,0.7598543781180124
+Teple napoje,0.9625378462067794
+Horka italska cokolada,0.8181571692757634
+Grog,0.7596372355066248
+Horka griotka,0.8181571692757624
+Pochutiny,0.8663564424565637
+Chipsy solene,0.8181571692757634
+Susenka, bonbonek,0.841391428694306

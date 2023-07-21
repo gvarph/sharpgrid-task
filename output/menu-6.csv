@@ -1,4 +1,5 @@
 text,confidence
+narojovy listek,0.76
 Lihoving,0.8
 Griotha,0.7939139344262295
 Vino,1
@@ -8,9 +9,11 @@ Dealkoholicke chlazene napoje,0.8
 Slivovice,0.7749282786885247
 Teple napoje,0.8
 Jagermeister,0.8127254098360658
+Jameson,0.7562909836065591
 Jack Daniels Honey,0.8125512295081972
 Punc,0.7751024590163915
 z Griotky,0.8075
+namaz si sam,0.76
 Pripravime, ohreieme,0.8
 Dobroty,1
 Slane,0.8125512295081972

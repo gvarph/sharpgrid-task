@@ -2,10 +2,12 @@ text,confidence
 KAFECWAFLE,0.85
 KAFECSALAT,0.85
 Salat se ztracenym vejcem,0.796875
+cherry rajcatka, sezam, ztracene vejce,0.7570312499999999
 Boruvkova omacka,0.85
 Belgicka wafle,0.8234374999999999
 Horka cokolada,0.85
 Karamelizovany jogurt,0.85
+salat,0.7570312499999999
 Slehany tvaroh,0.85
 Cokoladova wafle,0.85
 Wafle s lesnim ovocem,0.7703125
@@ -21,12 +23,15 @@ KAFECHOTDOG,0.85
 vyhonky mladeho hrasku,0.95
 Trhane,1
 je laska,0.95
+klasik,0.7570312499999999
 Jakood babicky,0.85
 Cheddar, roastbeef,0.796875
+remulada, rukola,0.7570312499999999
 Boruvkova wafle,0.796875
 Wafle se zakysanou smetanou, teplou,0.796875
 boruvkovou omackou a cerstvymi,0.890625
 Nebe,0.85
+a jazyku,0.76
 Karamelova wafle,0.796875
 zakysanou smetanou, horkou cokoladou,0.890625
 a prazenymi arasidy,0.8609374999999999

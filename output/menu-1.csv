@@ -38,6 +38,7 @@ Fresh Ginger,0.9450174547762616
 Czech Herb Mix,0.9454934941288471
 Tea,0.890510948905112
 Ristretto,0.7721080609330381
+Espresso,0.7563273563947952
 Filtered Coffee,0.8188432243732146
 espresso, hot chocolate, milk foam,0.9497738813075208
 Cappuccino,0.7876864487464311
@@ -47,6 +48,7 @@ coffee beverage from spelt, decaffeinated,0.9321366232941947
 Added shot of espresso,0.8340169787369093
 Coffee,0.9264519200253899
 Porridge from Millet Flakes,0.8188432243732156
+Croissant,0.7569343065693442
 Croissant With Prague chocolate,0.8348262456363063
 French,0.80366947000952
 Czech,0.8032648365598224
@@ -55,6 +57,7 @@ Breakfast,0.9816724849254199
 Soups,0.871945414154237
 Soup of the day,0.803264836559822
 Sandwiches,0.9269279593779753
+with blue goat cheese, honey-mustard dressing,0.76
 Prosciutto,0.8032648365598224
 Quiche,0.9450174547762616
 Mozzarella with tomatoes,0.8032648365598224
@@ -63,7 +66,9 @@ Savoury Waffles,0.9450174547762616
 Prague Ham & Cheese,0.8344216121866086
 Sweet Waffles,0.8905109489051098
 Prague Chocolate,0.7725126943827392
+Baked Banana,0.7569343065693434
 Fruit Special,0.834826245636308
+with sour cream and lime-honey sauce,0.76
 Baby Mini bites,0.8036694700095236
 Our Specialties,0.9459695334814356
 with horseradish sauce, mustard, pastry,0.8812599174865127
@@ -71,6 +76,7 @@ Grilled Haloumi Cheese,0.834826245636308
 with roasted vegetables,0.95
 Salads,0.9276420184068555
 honey-mustard dressing,0.95
+Tuna,0.7569343065693434
 Salmon,0.8194501745477628
 Specialties, Salads,1
 Desserts,0.872421453506824
@@ -103,5 +109,7 @@ Legendario Elixir de Cuba,0.8188432243732164
 Whiskey,0.944779435099969
 Laphroaig,0.8030625198349736
 Others,0.8900349095525286
+Becherovka,0.7565296731196421
 Slivovice,0.7719057442081891
+Hruskovice,0.7565296731196421
 Cocktails, Liquors, Spirits,1
