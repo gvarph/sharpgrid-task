@@ -15,34 +15,31 @@ from logger import get_logger
 logger = get_logger(__name__)
 
 CONF_THRESHOLD = 0.76
-OUTPUT_DIR = "output_gpt"
+OUTPUT_DIR = "output_ai" if OPEN_AI_API_KEY else "output"
 
 
-def get_file_paths(menu_json_path):
+def get_source_file(json_path):
     # Get the base filename without extension
-    base_filename = os.path.splitext(os.path.basename(menu_json_path))[0]
+    base_filename = os.path.splitext(os.path.basename(json_path))[0]
 
     # Get the directory name
-    dir_name = os.path.dirname(menu_json_path)
+    dir_name = os.path.dirname(json_path)
 
     # Glob for files with the same basename
     matching_files = glob.glob(os.path.join(dir_name, base_filename + ".*"))
 
     # Initialize the JSON and SOURCE files to None
-    json_file = None
     source_file = None
 
     # Go through each file and assign it to the appropriate variable based on its extension
     for file in matching_files:
-        if file.endswith(".json"):
-            json_file = file
-        elif file.endswith((".jpg", ".pdf")):
-            source_file = file
+        file_upper = file.upper()
+        for ext in IMG_EXTENSIONS + ["PDF"]:
+            if file_upper.endswith("." + ext):
+                source_file = file
+                break
 
-    if json_file is None or source_file is None:
-        raise ValueError("Both JSON and SOURCE files are needed")
-
-    return json_file, source_file
+    return source_file
 
 
 def load_ocr_data(json_file):
@@ -50,17 +47,14 @@ def load_ocr_data(json_file):
         return Menu.from_json(json.load(f))
 
 
-def load_doc(source_file) -> Document | None:
+def load_doc(source_file: str) -> Document:
     # load the PDF or JPEG
-    file_type = os.path.splitext(source_file)[-1].lower()
+    file_type: str = os.path.splitext(source_file)[-1].upper()
 
-    if file_type == ".pdf":
+    if file_type == ".PDF":
         return fitz.Document(source_file)
-    elif file_type in IMG_EXTENSIONS:
-        return img_to_fitz(source_file)
     else:
-        logger.info(f"Could not find source image/pdf, won't be creating a PDF")
-        return None
+        return img_to_fitz(source_file)
 
 
 def save_csv(lines: List[Line], filename: str):
@@ -77,11 +71,15 @@ def save_csv(lines: List[Line], filename: str):
 
 def save_pdf(
     lines: List[Line],
-    source_file: str,
     filename: str,
     lines_to_pages: dict[int, int],
     menu: Menu,
+    json_file: str,
 ):
+    source_file = get_source_file(json_file)
+    if not source_file:
+        logger.warning("No source file found, skipping PDF output")
+        return
     doc = load_doc(source_file)
     if doc:
         for line in lines:
@@ -92,8 +90,7 @@ def save_pdf(
 
 def process_file(path):
     logger.info(f"Processing file {path}")
-    json_file, source_file = get_file_paths(path)
-    menu = load_ocr_data(json_file)
+    menu = load_ocr_data(path)
 
     # Get all lines linked to page numbers
     lines_to_pages = {
@@ -109,20 +106,21 @@ def process_file(path):
         if line.analysis.category_confidence > CONF_THRESHOLD
     ]
 
-    logger.info(f"Found {len(possible_category_lines)} possible categories:")
+    logger.info(f"Found {len(possible_category_lines)} possible categories")
 
     if not os.path.isdir(OUTPUT_DIR):
         os.mkdir(OUTPUT_DIR)
 
-    filename_without_extension = os.path.splitext(os.path.basename(source_file))[0]
+    filename_without_extension = os.path.splitext(os.path.basename(path))[0]
 
     save_csv(possible_category_lines, filename_without_extension)
+
     save_pdf(
         possible_category_lines,
-        source_file,
         filename_without_extension,
         lines_to_pages,
         menu,
+        path,
     )
 
 
