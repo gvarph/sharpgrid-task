@@ -1,14 +1,8 @@
-import glob
 import os
 import sys
-import fitz
-from fitz import Document
-import json
-from env import OPEN_AI_API_KEY
 from file_handler import load_ocr_data, save
 
 from scan_classes import *
-from img2pdf import img_to_fitz, ALLOWED_EXTENSIONS as IMG_EXTENSIONS
 from filters import calculate_confindences
 from logger import get_logger
 
