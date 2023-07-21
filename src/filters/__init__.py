@@ -1,6 +1,6 @@
 from typing import List
 
-from scan_classes import Line, Menu
+from src.models import Line, Menu
 from .filter_classes import *
 from .base import LineFilter
 from .gpt_filter import MakeAIDoTheFiltering
@@ -28,7 +28,7 @@ def calculate_confindences(
         FilterPriceLines(0.5, currency_signs=["€", "$", "£", "Kč", "kr", "Kc", ",-"]),
         FilterLongLines(0.8, dropoff_start=5),
         FilterContainsNumbers(0.85),
-        FilterNottartWithCapital(0.95),
+        FilterNotStartWithCapital(0.95),
         FilterByOCRConfidence(0.8),
         FilterDuplicateText(0.5),
         FilterByEnding(

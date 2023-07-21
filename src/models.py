@@ -42,7 +42,7 @@ class Word:
 
 
 @attr.s
-class LineAnalasys:
+class LineAnalasis:
     category_confidence: float = attr.ib(default=1)
     type: Optional[str] = attr.ib(default=None)
 
@@ -52,7 +52,7 @@ class Line:
     text: str = attr.ib()
     bounding_box: BoundingBox = attr.ib()
     words: List[Word] = attr.ib(factory=list)
-    analysis: LineAnalasys = attr.ib(factory=LineAnalasys)
+    analysis: LineAnalasis = attr.ib(factory=LineAnalasis)
 
     @staticmethod
     def from_json(data: dict) -> "Line":

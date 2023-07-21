@@ -3,7 +3,7 @@ import sys
 from conf import CONF_THRESHOLD
 from file_handler import load_ocr_data, save
 
-from scan_classes import *
+from src.models import *
 from filters import calculate_confindences
 from logger import get_logger
 

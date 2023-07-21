@@ -5,7 +5,7 @@ from fitz import Document
 import json
 from conf import IMG_EXTENSIONS, OPEN_AI_API_KEY
 
-from scan_classes import *
+from src.models import *
 from img2pdf import img_to_fitz
 from logger import get_logger
 

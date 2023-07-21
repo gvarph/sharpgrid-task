@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Tuple
-from scan_classes import *
+from src.models import *
 
 from logger import get_logger
 
@@ -64,15 +64,10 @@ class LineFilter:
                 f"{filter.__class__.__name__} - remaining lines:{len(lines_above_confidence())}"
             )
             for line in lines:
-                if line.analysis.category_confidence > 1:
+                if 0 < line.analysis.category_confidence > 1:
                     logger.warning(
                         f"Line {line.text} has a category confidence of {line.analysis.category_confidence}"
                     )
                     line.analysis.category_confidence = 1
-                if line.analysis.category_confidence < 0:
-                    logger.warning(
-                        f"Line {line.text} has a category confidence of {line.analysis.category_confidence}"
-                    )
-                    line.analysis.category_confidence = 0
 
         return lines_above_confidence()

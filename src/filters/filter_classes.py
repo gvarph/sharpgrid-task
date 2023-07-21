@@ -2,7 +2,7 @@ from collections import Counter
 import re
 from typing import List, Tuple, Dict
 
-from scan_classes import Line
+from src.models import Line
 from .base import Filter
 
 from logger import get_logger
@@ -58,7 +58,7 @@ class FilterContainsNumbers(Filter):
                 line.analysis.category_confidence *= self.confidence_multiplier
 
 
-class FilterNottartWithCapital(Filter):
+class FilterNotStartWithCapital(Filter):
     """Penalizes lines that do not start with a capital letter."""
 
     def apply(self, lines: List[Line]) -> None:
