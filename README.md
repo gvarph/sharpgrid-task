@@ -32,7 +32,7 @@ The `--only main` will omit the development dependencies such as `black`
 
 2.2. Edit the `.env` file. The variables are explained in the `.env.template` file.
 
-2.3 (Optional) Now you can tune the filter parameters in the `filter/__ini__.py` file. The different filters can be found in the `filter` folder, and have docstrings so hovering over them in an IDE should show you what they do. The first parameter in each of them is their weight, which is used to symbolize how important the filter is. The higher the weight, the more important the filter is. The weight should be between 0 and 1.
+2.3 (Optional) Now you can tune the filter parameters in the `src/filter/__ini__.py` file. The different filters can be found in the `filter` folder, and have docstrings so hovering over them in an IDE should show you what they do. The first parameter in each of them is their weight, which is used to symbolize how important the filter is. The lower the multiplier, the higher impact the filter has.
 
 3. Run the script.
 
@@ -46,3 +46,9 @@ poetry run python src/main.py path/to/ocr/data.json
 # This will try to process all json files in the directory.
 poetry run python src/main.py path/to/ocr/data/directory
 ```
+
+4. The results will be in the `output`/`output_ai` folder.
+
+The program generates a .csv file for each json file it processes. The .csv file lines that are probably categories and the program's confidence in them.
+
+If the input json file has an associated pdf/image file, the program will also generate a pdf file with the lines that are probably categories highlighted.
