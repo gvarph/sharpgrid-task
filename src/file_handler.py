@@ -3,7 +3,7 @@ import os
 import fitz
 from fitz import Document
 import json
-from conf import IMG_EXTENSIONS, OPEN_AI_API_KEY
+from conf import OPEN_AI_API_KEY, SOURCE_EXTENSIONS
 
 from models import *
 from img2pdf import img_to_fitz
@@ -30,7 +30,7 @@ def get_source_file(json_path):
     # Go through each file and assign it to the appropriate variable based on its extension
     for file in matching_files:
         file_upper = file.upper()
-        for ext in IMG_EXTENSIONS:
+        for ext in SOURCE_EXTENSIONS:
             if file_upper.endswith("." + ext):
                 source_file = file
                 break
